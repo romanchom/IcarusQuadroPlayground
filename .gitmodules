@@ -1,0 +1,6 @@
+[submodule "MbedAsyncI2C"]
+	path = MbedAsyncI2C
+	url = git@github.com:Icarus-Quadro/MbedAsyncI2C.git
+[submodule "MPU-9255-driver"]
+	path = MPU-9255-driver
+	url = git@github.com:Icarus-Quadro/MPU-9255-driver.git
