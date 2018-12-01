@@ -1,0 +1,4 @@
+ROOT=.
+TARGET=NUCLEO_F767ZI
+TOOLCHAIN=GCC_ARM
+GCC_ARM_PATH=/home/romek/gcc-arm-none-eabi/bin
