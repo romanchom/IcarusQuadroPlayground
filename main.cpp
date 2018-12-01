@@ -9,16 +9,16 @@ class BigEndianShort
 public:
     uint16_t value() const
     {
-        return *this;
+        return (static_cast<uint16_t>(highByte) << 8) | static_cast<uint16_t>(lowByte);;
     }
 
     operator uint16_t () const
     {
-        return ((highByte) << 8) | lowByte;
+        return value();
     }
 private:
-    uint16_t highByte : 8;
-    uint16_t lowByte : 8;
+    uint8_t highByte;
+    uint8_t lowByte;
 };
 
 class TemperatureRegister {
@@ -35,22 +35,20 @@ private:
 
 MbedAsyncI2C<4, 64> i2c(PB_9, PB_8);
 
-Semaphore readingSem(0, 1);
-float temperature;
-
 DigitalOut led1(LED1);
 
 int main() {
     printf("Hello\n\r");
+    int i = 0;
     while (true) {
         led1 = !led1;
-        printf("Enter\n\r");
-        i2c.scheduleRead<TemperatureRegister>(104, [](TemperatureRegister const& data){
-            temperature = data.value();
-            readingSem.release();
+        printf("Enter %d\n\r", ++i);
+        i2c.schedule<TemperatureRegister>(I2CTransferType::read, 104, [](auto const& data){
+            printf("Temperature1 %f\n\r", data.value());
         });
-        readingSem.wait();
-        printf("Temperature %f\n\r", temperature);
+        i2c.schedule<TemperatureRegister>(I2CTransferType::read, 104, [](auto const& data){
+            printf("Temperature2 %f\n\r", data.value());
+        });
 
         wait(0.3);
     }
