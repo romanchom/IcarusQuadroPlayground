@@ -13,23 +13,28 @@ DigitalOut led1(LED1);
 constexpr uint8_t agAddress = 104;
 constexpr uint8_t magAddress = 12;
 
-namespace AG = AccelerometerGyroscope;
+namespace AG = MPU9255::AccelerometerGyroscope;
+namespace Mag = MPU9255::Magnetometer;
 
 int main() {
     printf("Hello\n\r");
 
     // enable direct i2c access to magnetometer
-    AG::InterruptBypassConfiguration config;
+    AG::InterruptBypassConfiguration config = {};
     config.enableBypass = true;
     i2c.scheduleWrite(agAddress, config, [](){});
     wait(0.1);
 
     // enable continous measurement
-    Magnetometer::Control1 control = {};
-    control.mode = Magnetometer::OperationMode::continousMeasurement2;
+    Mag::Control1 control = {};
+    control.mode = Mag::OperationMode::continousMeasurement2;
     i2c.scheduleWrite(magAddress, control, [](){
         printf("Magnetometer init\n\r");
     });
+
+    AG::AccelerometerConfiguration1 accConfig = {};
+    accConfig.fullScaleSelect = AG::AccelerometerRange::g4;
+    i2c.scheduleWrite(agAddress, accConfig, [](){});
 
     wait(0.1);
 
@@ -45,7 +50,7 @@ int main() {
         i2c.scheduleRead<AG::GyroscopeMeasurements>(agAddress, [](auto const& data){
             printf("Gyroscope %d %d %d\n\r", data.x(), data.y(), data.z());
         });
-        i2c.scheduleRead<Magnetometer::Measurements>(magAddress, [](auto const& data){
+        i2c.scheduleRead<Mag::Measurements>(magAddress, [](auto const& data){
             printf("Magnetometer %d %d %d\n\r", data.x(), data.y(), data.z());
         });
         wait(1.0);
