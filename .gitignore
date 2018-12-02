@@ -2,3 +2,4 @@ BUILD
 mbed-os
 .vscode
 *.pyc
+.mbed
