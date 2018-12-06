@@ -3,3 +3,4 @@ mbed-os
 .vscode
 *.pyc
 .mbed
+build
